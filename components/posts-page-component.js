@@ -1,6 +1,7 @@
-import { USER_POSTS_PAGE } from "../routes.js";
+import { POSTS_PAGE, USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
+import { addLike, disLike } from "../api.js";
 
 export function renderPostsPageComponent({ appEl }) {
   // TODO: реализовать рендер постов из api
@@ -15,8 +16,8 @@ export function renderPostsPageComponent({ appEl }) {
       <img class="post-image" src="${item.imageUrl}">
     </div>
     <div class="post-likes">
-      <button data-post-id="642d00579b190443860c2f32" class="like-button">
-        <img src="./assets/images/like-active.svg">
+      <button data-id="${item.id}" class="like-button">
+        ${item.isLiked ? '<img src="./assets/images/like-active.svg">' : '<img src="./assets/images/like-not-active.svg">'}
       </button>
       <p class="post-likes-text">
         Нравится: <strong>${item.likes.length}</strong>
@@ -32,7 +33,6 @@ export function renderPostsPageComponent({ appEl }) {
   </li>
   `
   }).join('');
-
 
   /**
    * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
@@ -57,6 +57,52 @@ export function renderPostsPageComponent({ appEl }) {
       goToPage(USER_POSTS_PAGE, {
         userId: userEl.dataset.userId,
       });
+
     });
   }
+  function initLikeButtonListeners() {
+    const buttonElements = document.querySelectorAll('.like-button')
+    for (const buttonElement of buttonElements) {
+        buttonElement.addEventListener('click', () => {
+          const id = buttonElement.dataset.id
+          const found = posts.find((item) => item.id === id)
+          if (found.isLiked) {
+            disLike(id).then(() =>{
+              goToPage(POSTS_PAGE)
+            })
+        } else {
+            addLike(id).then(() =>{
+              goToPage(POSTS_PAGE)
+            })
+        }
+      })
+    }
+  }
+
+  function userPosts() {
+    const buttonElements = document.querySelectorAll('.like-button')
+    for (const buttonElement of buttonElements) {
+        buttonElement.addEventListener('click', () => {
+          const id = buttonElement.dataset.id
+          const found = posts.find((item) => item.id === id)
+          if (found.isLiked) {
+            disLike(id).then(() =>{
+              goToPage(POSTS_PAGE)
+            })
+        } else {
+            addLike(id).then(() =>{
+              goToPage(POSTS_PAGE)
+            })
+        }
+      })
+    }
+  }
+  initLikeButtonListeners()
 }
+
+
+
+
+
+
+

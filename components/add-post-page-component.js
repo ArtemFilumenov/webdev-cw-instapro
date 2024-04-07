@@ -1,3 +1,4 @@
+import { renderHeaderComponent } from "./header-component.js";
 import { renderUploadImageComponent } from "./upload-image-component.js";
 
 export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
@@ -14,14 +15,16 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
           </div>
         </div>
         <p>Опишите фотографию:</p>
-        <textarea></textarea>
+        <textarea type="textarea" class="add-text" id="description"></textarea>
         <button class="button" id="add-button">Добавить</button>
       </div>
-    </div>
-  `;
-
+    </div>`;
   
     appEl.innerHTML = appHtml;
+
+    renderHeaderComponent({
+      element: document.querySelector(".header-container"),
+    });
 
     const uploadImageContainer = appEl.querySelector(".upload-image-container");
 
@@ -34,14 +37,13 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
       });
     }
 
-
     document.getElementById("add-button").addEventListener("click", () => {
+      const description = document.getElementById("description");
       onAddPostClick({
-        description: "Описание картинки",
-        imageUrl: "https://image.png",
+        description: description.value,
+        imageUrl: imageUrl,
       });
     });
   };
-
   render();
 }

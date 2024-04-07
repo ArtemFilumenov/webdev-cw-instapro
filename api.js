@@ -1,14 +1,25 @@
-// Замени на свой, чтобы получить независимый от других набор данных.
-// "боевая" версия инстапро лежит в ключе prod
-const personalKey = "prod";
+import {user} from "./index.js"
+
+const personalKey = ":artem-filumenov";
 const baseHost = "https://webdev-hw-api.vercel.app";
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`;
 
-export function getPosts({ token }) {
+const getToken = () => {
+  const token = user  ? `Bearer ${user.token}` : undefined;
+  return token;
+}
+
+const userID = () => {
+  id = user._id;
+  console.log(id);
+  return id;
+}
+
+export function getPosts() {
   return fetch(postsHost, {
     method: "GET",
     headers: {
-      Authorization: token,
+      Authorization: getToken(),
     },
   })
     .then((response) => {
@@ -68,3 +79,83 @@ export function uploadImage({ file }) {
     return response.json();
   });
 }
+
+export function addPost({description, imageUrl}) {
+  return fetch(postsHost,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          description: description.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+          imageUrl: imageUrl,
+        }),
+        headers: {
+          Authorization: getToken(),
+        },
+      }).then((response) => {
+        if (response.status === 500) {
+          throw new Error("Сервер упал");
+        };
+        if (response.status === 400) {
+          throw new Error("Короткие вводимые данные");
+        };
+        return response.json();
+      });
+};
+
+export function addLike(id) {
+  return fetch(postsHost + "/" + id + "/like",
+      {
+        method: "POST",
+        headers: {
+          Authorization: getToken(),
+        },
+      }).then((response) => {
+        if (response.status === 500) {
+          throw new Error("Сервер упал");
+        };
+        if (response.status === 400) {
+          throw new Error("Короткие вводимые данные");
+        };
+        return response.json();
+      });
+};
+
+export function disLike(id) {
+  return fetch(postsHost + "/" + id + "/dislike",
+      {
+        method: "POST",
+        headers: {
+          Authorization: getToken(),
+        },
+      }).then((response) => {
+        if (response.status === 500) {
+          throw new Error("Сервер упал");
+        };
+        if (response.status === 400) {
+          throw new Error("Короткие вводимые данные");
+        };
+        return response.json();
+      });
+};
+
+export function getUserPosts(id) {
+  return fetch(postsHost + "/user-posts/" + id,
+      {
+        method: "POST",
+        headers: {
+          Authorization: getToken(),
+        },
+      }).then((response) => {
+        if (response.status === 500) {
+          throw new Error("Сервер упал");
+        };
+        if (response.status === 400) {
+          throw new Error("Короткие вводимые данные");
+        };
+        return response.json();
+      });
+};
+
+
+
+
