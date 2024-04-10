@@ -9,12 +9,6 @@ const getToken = () => {
   return token;
 }
 
-const userID = () => {
-  id = user._id;
-  console.log(id);
-  return id;
-}
-
 export function getPosts() {
   return fetch(postsHost, {
     method: "GET",
@@ -39,9 +33,9 @@ export function registerUser({ login, password, name, imageUrl }) {
   return fetch(baseHost + "/api/user", {
     method: "POST",
     body: JSON.stringify({
-      login,
-      password,
-      name,
+      login: login.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+      password: password.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+      name: name.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
       imageUrl,
     }),
   }).then((response) => {
@@ -56,8 +50,8 @@ export function loginUser({ login, password }) {
   return fetch(baseHost + "/api/user/login", {
     method: "POST",
     body: JSON.stringify({
-      login,
-      password,
+      login: login.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+      password: password.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
     }),
   }).then((response) => {
     if (response.status === 400) {
@@ -141,21 +135,22 @@ export function disLike(id) {
 export function getUserPosts(id) {
   return fetch(postsHost + "/user-posts/" + id,
       {
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: getToken(),
         },
-      }).then((response) => {
-        if (response.status === 500) {
-          throw new Error("Сервер упал");
-        };
-        if (response.status === 400) {
-          throw new Error("Короткие вводимые данные");
-        };
+      })
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Нет авторизации");
+        }
+  
         return response.json();
+      })
+      .then((data) => {
+        return data.posts;
       });
-};
-
+    }
 
 
 
